@@ -1,15 +1,14 @@
 var app = require('../app');
 var request = require('supertest').agent(app.listen());
 var co = require('co');
+var users = require('../repository').users;
 
 describe("Simple User Http Crud API", function () {
-
     var a_user;
-    //var userLocation;
 
     function removeAll(done) {
         co(function * () {
-            yield app.users.remove({});
+            yield users.remove({});
         }).then(done, done);
     }
 
@@ -24,11 +23,6 @@ describe("Simple User Http Crud API", function () {
             .send(a_user)
             .expect('Location', /^\/user\/[0-9a-fA-F]{24}$/)
             .expect(200, done);
-        //.end(function (err, res) {
-        //    if (err) return done(err);
-        //    userLocation = res.headers.location;
-        //    done()
-        //});
     });
 
     it("fails with validation error for users without name", function (done) {
@@ -45,7 +39,7 @@ describe("Simple User Http Crud API", function () {
 
         co(function *() {
 
-            var insertedUser = yield  app.users.insert(a_user);
+            var insertedUser = yield  users.insert(a_user);
             var url = '/user/' + insertedUser._id;
             request
                 .get(url)
@@ -55,21 +49,12 @@ describe("Simple User Http Crud API", function () {
                 .expect(/1.96/)
                 .expect(200, done);
         });
-
-        //request
-        //    .get(userLocation)
-        //    .set('Accept', 'application/json')
-        //    .expect('Content-type', /json/)
-        //    .expect(/Marcus/)
-        //    .expect(/1.96/)
-        //    .expect(200, done);
-
     });
 
     it("updates an existing user", function (done) {
         co(function *() {
 
-            var insertedUser = yield  app.users.insert(a_user);
+            var insertedUser = yield  users.insert(a_user);
             var url = '/user/' + insertedUser._id;
 
             request
@@ -84,7 +69,7 @@ describe("Simple User Http Crud API", function () {
     it("deletes an existing user", function (done) {
         co(function *() {
 
-            var insertedUser = yield  app.users.insert(a_user);
+            var insertedUser = yield  users.insert(a_user);
             var url = '/user/' + insertedUser._id;
 
             request
